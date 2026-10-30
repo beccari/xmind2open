@@ -67,3 +67,7 @@ Open formats have no native "range of siblings" grouping, so:
 This is an independent, unofficial tool. It is not affiliated with or endorsed
 by XMind Ltd. "XMind" is a trademark of its owner and is used here only to
 describe the file format the tool reads.
+
+## License
+
+[MIT](LICENSE)
