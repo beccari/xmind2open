@@ -9,6 +9,10 @@ use std::collections::HashMap;
 use crate::model::{Group, GroupKind, Sheet, Topic};
 
 fn xml_escape(s: &str) -> String {
+    let s: String = s
+        .chars()
+        .filter(|c| matches!(c, '\t' | '\n' | '\r' | '\u{20}'..='\u{D7FF}' | '\u{E000}'..='\u{FFFD}' | '\u{10000}'..))
+        .collect();
     s.replace('&', "&amp;")
         .replace('<', "&lt;")
         .replace('>', "&gt;")
@@ -238,7 +242,11 @@ fn boundary_spans(
 
 // ---- Mermaid (.mmd) -------------------------------------------------------------
 fn mermaid_label(s: &str) -> String {
-    s.replace('&', "&amp;").replace('"', "#quot;").replace('\n', "<br/>")
+    s.replace('&', "&amp;")
+        .replace('<', "#lt;")
+        .replace('>', "#gt;")
+        .replace('"', "#quot;")
+        .replace('\n', "<br/>")
 }
 
 pub fn mermaid(sheet: &Sheet) -> String {

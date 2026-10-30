@@ -5,7 +5,7 @@ Command-line tool that converts XMind workbooks (`.xmind`) to open formats.
 It reads both XMind Zen / 2020+ workbooks (`content.json`) and XMind 8
 workbooks (`content.xml`). By default it writes a single **OPML** file, the
 most widely supported outline interchange format (Freeplane, MindNode,
-iThoughts, WorkFlowy, Dynalist and XMind itself can import it). Other formats
+iThoughts, WorkFlowy and Dynalist can import it). Other formats
 are opt-in with `-f`.
 
 ## Install
@@ -61,3 +61,9 @@ Open formats have no native "range of siblings" grouping, so:
 - **Boundaries** become an extra child labelled `Group`, with the same `covers` list.
 - **Notes** and **markers** are kept (OPML `_note` / `_markers`, FreeMind
   rich-content notes, Markdown blockquotes, note nodes in Mermaid / DOT).
+
+## Disclaimer
+
+This is an independent, unofficial tool. It is not affiliated with or endorsed
+by XMind Ltd. "XMind" is a trademark of its owner and is used here only to
+describe the file format the tool reads.

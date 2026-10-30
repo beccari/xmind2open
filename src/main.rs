@@ -50,8 +50,8 @@ const ALL: [Format; 8] = [
 ///
 /// Reads both XMind Zen/2020+ (content.json) and XMind 8 (content.xml)
 /// workbooks. By default only OPML is written, the most widely supported
-/// outline interchange format (Freeplane, MindNode, iThoughts, WorkFlowy,
-/// Dynalist and XMind itself can import it).
+/// outline interchange format (Freeplane, MindNode, iThoughts, WorkFlowy
+/// and Dynalist can import it).
 ///
 /// OPML, Markdown, DOT and HTML hold every sheet in one file. FreeMind,
 /// Mermaid, PNG and JPG are written once per sheet, named
@@ -163,13 +163,14 @@ fn run(cli: Cli) -> Result<()> {
             }
             Format::Png | Format::Jpg => {
                 let want_png = formats.contains(&Format::Png);
-                // JPG is converted from a PNG; if PNG wasn't requested, use a temp file
+                // JPG is converted from a PNG; if PNG wasn't requested, use a hidden temp file
+                // in the output dir (not the shared system temp dir) and delete it afterwards
                 for (i, s) in sheets.iter().enumerate() {
                     let base = sheet_base(&doc_title, &sheets, i);
                     let png = if want_png {
                         dir.join(format!("{base}.png"))
                     } else {
-                        std::env::temp_dir().join(format!("xmind2open-{}-{i}.png", std::process::id()))
+                        dir.join(format!(".{base}.tmp-{}.png", std::process::id()))
                     };
                     if *f == Format::Png {
                         render::png(s, &png)?;

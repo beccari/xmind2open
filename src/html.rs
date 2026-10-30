@@ -43,8 +43,8 @@ fn esc(s: &str) -> String {
 }
 
 pub fn html(sheets: &[Sheet], doc_title: &str) -> String {
-    // keep the JSON inside <script type="application/json">
-    let data = spec(sheets, doc_title).to_string().replace("</", "<\\/");
+    // '<' is escaped so the data can never close or confuse the <script> block
+    let data = spec(sheets, doc_title).to_string().replace('<', "\\u003c");
     let title = esc(doc_title);
     format!(
         r#"<!DOCTYPE html>

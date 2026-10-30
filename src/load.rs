@@ -21,17 +21,25 @@ pub fn load(path: &Path) -> Result<Vec<Sheet>> {
     let mut zip = zip::ZipArchive::new(file)
         .with_context(|| format!("{} is not a valid .xmind (zip) file", path.display()))?;
 
-    if let Ok(mut entry) = zip.by_name("content.json") {
-        let mut raw = String::new();
-        entry.read_to_string(&mut raw)?;
-        return load_json(&raw);
+    if let Ok(entry) = zip.by_name("content.json") {
+        return load_json(&read_capped(entry)?);
     }
-    if let Ok(mut entry) = zip.by_name("content.xml") {
-        let mut raw = String::new();
-        entry.read_to_string(&mut raw)?;
-        return load_xml(&raw);
+    if let Ok(entry) = zip.by_name("content.xml") {
+        return load_xml(&read_capped(entry)?);
     }
     bail!("{}: neither content.json nor content.xml found", path.display())
+}
+
+/// Largest decompressed content file we accept; guards against zip bombs.
+const MAX_CONTENT_BYTES: u64 = 256 * 1024 * 1024;
+
+fn read_capped(entry: impl Read) -> Result<String> {
+    let mut raw = String::new();
+    let n = entry.take(MAX_CONTENT_BYTES + 1).read_to_string(&mut raw)?;
+    if n as u64 > MAX_CONTENT_BYTES {
+        bail!("workbook content exceeds {} MiB", MAX_CONTENT_BYTES >> 20);
+    }
+    Ok(raw)
 }
 
 /// Parses an XMind range spec such as `(0,2)`.
@@ -276,11 +284,7 @@ fn xml_topic(el: Node, src: &str) -> Topic {
 }
 
 fn load_xml(raw: &str) -> Result<Vec<Sheet>> {
-    let doc = roxmltree::Document::parse_with_options(
-        raw,
-        roxmltree::ParsingOptions { allow_dtd: true, ..Default::default() },
-    )
-    .context("invalid content.xml")?;
+    let doc = roxmltree::Document::parse(raw).context("invalid content.xml")?;
     let mut sheets = Vec::new();
     for (i, sheet) in children(doc.root_element(), "sheet").enumerate() {
         let topic_el = child(sheet, "topic").ok_or_else(|| anyhow!("sheet {} has no root topic", i + 1))?;
