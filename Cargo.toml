@@ -1,0 +1,16 @@
+[package]
+name = "xmind2open"
+version = "0.1.0"
+edition = "2021"
+description = "Convert XMind workbooks (.xmind) to open formats: OPML, FreeMind, Markdown, Mermaid, Graphviz, HTML, PNG/JPG"
+license = "MIT"
+
+[dependencies]
+anyhow = "1"
+chrono = { version = "0.4", default-features = false, features = ["clock"] }
+clap = { version = "4", features = ["derive", "wrap_help"] }
+html-escape = "0.2"
+regex = "1"
+roxmltree = "0.20"
+serde_json = { version = "1", features = ["preserve_order"] }
+zip = { version = "2", default-features = false, features = ["deflate"] }

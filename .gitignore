@@ -1,0 +1,9 @@
+# build output
+/target
+
+# generated conversions
+/out
+
+# macOS
+.DS_Store
+__pycache__/
